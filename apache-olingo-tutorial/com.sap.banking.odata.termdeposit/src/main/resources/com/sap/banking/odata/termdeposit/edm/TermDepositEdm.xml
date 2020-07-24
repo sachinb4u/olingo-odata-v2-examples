@@ -33,8 +33,8 @@
 				<Property Name="ValueDate" Type="Edm.DateTime" />
 				<Property Name="MaturityDate" Type="Edm.DateTime" />
 				<Property Name="Tenure" Type="Edm.String" MaxLength="20" />
-				<NavigationProperty Name="FromAcount" Relationship="com.sap.banking.termdeposit.beans.TermDeposit_Account" FromRole="Role_TermDeposit" ToRole="Role_Account" />
-				<NavigationProperty Name="ToAcount" Relationship="com.sap.banking.termdeposit.beans.TermDeposit_Account" FromRole="Role_TermDeposit" ToRole="Role_Account" />
+				<NavigationProperty Name="FromAccount" Relationship="com.sap.banking.termdeposit.beans.TermDeposit_Account" FromRole="Role_TermDeposit" ToRole="Role_Account" />
+				<NavigationProperty Name="ToAccount" Relationship="com.sap.banking.termdeposit.beans.TermDeposit_Account" FromRole="Role_TermDeposit" ToRole="Role_Account" />
 			</EntityType>
 			<ComplexType Name="DepositRate">
 				<Property Name="Rate" Type="Edm.Double" />
@@ -47,6 +47,11 @@
 			</Association>
 			<EntityContainer Name="TermDepositContainer" m:IsDefaultEntityContainer="true">
 				<EntitySet Name="TermDeposits" EntityType="com.sap.banking.termdeposit.beans.TermDeposit" />
+				<EntitySet Name="Accounts" EntityType="com.sap.banking.termdeposit.beans.Account" />
+				<AssociationSet Name="TermDeposit_Accounts" Association="com.sap.banking.termdeposit.beans.TermDeposit_Account">
+					<End EntitySet="TermDeposits" Role="Role_TermDeposit"/>
+					<End EntitySet="Accounts" Role="Role_Account"/>
+				</AssociationSet>
 			</EntityContainer>
 		</Schema>
 	</edmx:DataServices>

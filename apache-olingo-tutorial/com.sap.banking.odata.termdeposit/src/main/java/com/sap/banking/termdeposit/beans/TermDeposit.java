@@ -3,7 +3,7 @@ package com.sap.banking.termdeposit.beans;
 import java.math.BigDecimal;
 import java.util.Date;
 
-public class TermDeposit extends Account{
+public class TermDeposit extends Account {
 
 	private String fromAccountId;
 	private String toAccountId;
@@ -18,6 +18,8 @@ public class TermDeposit extends Account{
 	private Date maturityDate;
 	private String tenure;
 	private DepositRate interestRate;
+	private Account fromAccount;
+	private Account toAccount;
 
 	public String getFromAccountId() {
 		return fromAccountId;
@@ -121,6 +123,22 @@ public class TermDeposit extends Account{
 
 	public void setInterestRate(DepositRate interestRate) {
 		this.interestRate = interestRate;
+	}
+
+	public Account getFromAccount() {
+		return fromAccount;
+	}
+
+	public void setFromAccount(Account fromAccount) {
+		this.fromAccount = fromAccount;
+	}
+
+	public Account getToAccount() {
+		return toAccount;
+	}
+
+	public void setToAccount(Account toAccount) {
+		this.toAccount = toAccount;
 	}
 
 }

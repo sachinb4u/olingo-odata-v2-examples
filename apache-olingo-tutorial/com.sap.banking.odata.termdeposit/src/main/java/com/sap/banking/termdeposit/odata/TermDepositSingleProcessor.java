@@ -5,11 +5,14 @@ import static java.util.stream.Collectors.toMap;
 
 import java.io.InputStream;
 import java.lang.reflect.Method;
+import java.net.URI;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 
+import org.apache.olingo.odata2.api.ODataCallback;
 import org.apache.olingo.odata2.api.commons.HttpStatusCodes;
 import org.apache.olingo.odata2.api.edm.EdmEntitySet;
 import org.apache.olingo.odata2.api.edm.EdmEntityType;
@@ -17,11 +20,16 @@ import org.apache.olingo.odata2.api.edm.EdmProperty;
 import org.apache.olingo.odata2.api.ep.EntityProvider;
 import org.apache.olingo.odata2.api.ep.EntityProviderReadProperties;
 import org.apache.olingo.odata2.api.ep.EntityProviderWriteProperties;
+import org.apache.olingo.odata2.api.ep.EntityProviderWriteProperties.ODataEntityProviderPropertiesBuilder;
 import org.apache.olingo.odata2.api.ep.entry.ODataEntry;
 import org.apache.olingo.odata2.api.exception.ODataException;
+import org.apache.olingo.odata2.api.exception.ODataNotFoundException;
 import org.apache.olingo.odata2.api.processor.ODataResponse;
 import org.apache.olingo.odata2.api.processor.ODataSingleProcessor;
+import org.apache.olingo.odata2.api.uri.ExpandSelectTreeNode;
 import org.apache.olingo.odata2.api.uri.KeyPredicate;
+import org.apache.olingo.odata2.api.uri.NavigationSegment;
+import org.apache.olingo.odata2.api.uri.UriParser;
 import org.apache.olingo.odata2.api.uri.info.DeleteUriInfo;
 import org.apache.olingo.odata2.api.uri.info.GetComplexPropertyUriInfo;
 import org.apache.olingo.odata2.api.uri.info.GetEntitySetUriInfo;
@@ -30,6 +38,7 @@ import org.apache.olingo.odata2.api.uri.info.GetSimplePropertyUriInfo;
 import org.apache.olingo.odata2.api.uri.info.PostUriInfo;
 import org.apache.olingo.odata2.api.uri.info.PutMergePatchUriInfo;
 
+import com.sap.banking.termdeposit.beans.Account;
 import com.sap.banking.termdeposit.beans.DepositRate;
 import com.sap.banking.termdeposit.beans.TermDeposit;
 
@@ -59,23 +68,60 @@ public class TermDepositSingleProcessor extends ODataSingleProcessor {
 	 */
 	@Override
 	public ODataResponse readEntity(GetEntityUriInfo uriInfo, String contentType) throws ODataException {
-		EdmEntitySet entitySet = uriInfo.getStartEntitySet();
 
-		// get id for Entity
-		String id = uriInfo.getKeyPredicates().get(0).getLiteral();
+		if (uriInfo.getNavigationSegments().size() == 0) {
+			EdmEntitySet entitySet = uriInfo.getStartEntitySet();
 
-		// Get record from Backend
-		TermDeposit result = dbStore.getTermDeposit(id);
+			// get id for Entity
+			String id = uriInfo.getKeyPredicates().get(0).getLiteral();
 
-		if (result == null) {
-			return ODataResponse.status(HttpStatusCodes.NOT_FOUND).build();
+			// Get record from Backend
+			TermDeposit result = dbStore.getTermDeposit(id);
+
+			if (result == null) {
+				return ODataResponse.status(HttpStatusCodes.NOT_FOUND).build();
+			}
+
+			// register Callback for expand
+			URI serviceRoot = getContext().getPathInfo().getServiceRoot();
+			Map<String, ODataCallback> callbacks = new HashMap<>();
+			callbacks.put("FromAccount", new EntityExpandCallback(dbStore, serviceRoot));
+			callbacks.put("ToAccount", new EntityExpandCallback(dbStore, serviceRoot));
+			
+			ODataEntityProviderPropertiesBuilder propertiesBuilder = EntityProviderWriteProperties.serviceRoot(serviceRoot);
+			ExpandSelectTreeNode expandSelectTreeNode = UriParser.createExpandSelectTree(uriInfo.getSelect(), uriInfo.getExpand());
+			propertiesBuilder.expandSelectTree(expandSelectTreeNode).callbacks(callbacks);
+
+			// Get Properties for Entity
+			Map<String, Object> data = getPropertiesFromObject(result);
+
+			return EntityProvider.writeEntry(contentType, entitySet, data, propertiesBuilder.build());
+		} else if (uriInfo.getNavigationSegments().size() == 1) {
+			EdmEntitySet entitySet = uriInfo.getStartEntitySet();
+			// get id for Entity
+			String id = uriInfo.getKeyPredicates().get(0).getLiteral();
+
+			// Get record from Backend
+			TermDeposit result = dbStore.getTermDeposit(id);
+
+			if (result == null) {
+				return ODataResponse.status(HttpStatusCodes.NOT_FOUND).build();
+			}
+			NavigationSegment navSegment = uriInfo.getNavigationSegments().get(0);
+			Account account = null;
+			if (navSegment.getNavigationProperty().getName().equals("FromAccount")) {
+				account = result.getFromAccount();
+			} else if (navSegment.getNavigationProperty().getName().equals("ToAccount")) {
+				account = result.getToAccount();
+			}
+			// Get Properties for Entity
+			Map<String, Object> data = getPropertiesFromObject(account);
+
+			return EntityProvider.writeEntry(contentType, entitySet.getRelatedEntitySet(navSegment.getNavigationProperty()), data,
+					EntityProviderWriteProperties.serviceRoot(getContext().getPathInfo().getServiceRoot()).build());
+
 		}
-
-		// Get Properties for Entity
-		Map<String, Object> data = getPropertiesFromObject(result);
-
-		return EntityProvider.writeEntry(contentType, entitySet, data,
-				EntityProviderWriteProperties.serviceRoot(getContext().getPathInfo().getServiceRoot()).build());
+		throw new ODataNotFoundException(ODataNotFoundException.ENTITY);
 	}
 
 	/**
@@ -267,24 +313,28 @@ public class TermDepositSingleProcessor extends ODataSingleProcessor {
 	 * 
 	 * @param m
 	 * @param obj
-	 * @param methodArgs
+	 * @param methodArgument
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	private Object invokeSetMethod(Method m, Object obj, Object methodArgs) {
+	private Object invokeSetMethod(Method m, Object obj, Object methodArgument) {
 		try {
 			// if prop value / arg is Map i.e. Property has ComplexType
-			if (methodArgs instanceof Map) {
+			if (methodArgument instanceof Map) {
 				// Create ComplexType object
 				Class<?> complexTypeClass = m.getParameterTypes()[0];
 				Object complexTypeObj = complexTypeClass.newInstance();
 
 				// Get ComplexType Object from properties. Note - this is recursive call so it
 				// will work for nested complex types
-				methodArgs = setPropertiesToObject(complexTypeObj, (Map<String, Object>) methodArgs);
+				methodArgument = setPropertiesToObject(complexTypeObj, (Map<String, Object>) methodArgument);
 			}
 			// call setter - for COmplex type above if block gets the Object
-			m.invoke(obj, methodArgs);
+			if (methodArgument instanceof Calendar) {
+				m.invoke(obj, ((Calendar) methodArgument).getTime());
+			} else {
+				m.invoke(obj, methodArgument);
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -297,8 +347,8 @@ public class TermDepositSingleProcessor extends ODataSingleProcessor {
 	 * @param objects
 	 * @return
 	 */
-	private List<Map<String, Object>> getPropertiesForList(List<?> objects) {
-		return objects.stream().map(this::getPropertiesFromObject).collect(toList());
+	public static List<Map<String, Object>> getPropertiesForList(List<?> objects) {
+		return objects.stream().map(TermDepositSingleProcessor::getPropertiesFromObject).collect(toList());
 	}
 
 	/**
@@ -307,10 +357,11 @@ public class TermDepositSingleProcessor extends ODataSingleProcessor {
 	 * @param object
 	 * @return
 	 */
-	private Map<String, Object> getPropertiesFromObject(Object object) {
+	public static Map<String, Object> getPropertiesFromObject(Object object) {
 
-		Map<String, Object> propertiesMap = Stream.of(object.getClass().getMethods()).filter(this::isGetMethod).filter(m -> invokeGetMethod(m, object) != null)
-				.collect(toMap(this::getPropertyNameFromMethod, m -> invokeGetMethod(m, object)));
+		Map<String, Object> propertiesMap = Stream.of(object.getClass().getMethods()).filter(TermDepositSingleProcessor::isGetMethod)
+				.filter(m -> invokeGetMethod(m, object) != null)
+				.collect(toMap(TermDepositSingleProcessor::getPropertyNameFromMethod, m -> invokeGetMethod(m, object)));
 
 		return propertiesMap;
 	}
@@ -322,11 +373,11 @@ public class TermDepositSingleProcessor extends ODataSingleProcessor {
 	 * @param obj
 	 * @return
 	 */
-	private Object invokeGetMethod(Method m, Object obj) {
+	private static Object invokeGetMethod(Method m, Object obj) {
 		Object result = null;
 		try {
 			result = m.invoke(obj, new Object[] {});
-			if (result instanceof DepositRate) {
+			if (result instanceof DepositRate || result instanceof Account) {
 				result = getPropertiesFromObject(result);
 			}
 		} catch (Exception ex) {
@@ -340,7 +391,7 @@ public class TermDepositSingleProcessor extends ODataSingleProcessor {
 	 * @param m
 	 * @return
 	 */
-	private String getPropertyNameFromMethod(Method m) {
+	private static String getPropertyNameFromMethod(Method m) {
 		return m.getName().substring(3);
 	}
 
@@ -350,7 +401,7 @@ public class TermDepositSingleProcessor extends ODataSingleProcessor {
 	 * @param m
 	 * @return
 	 */
-	private boolean isGetMethod(Method m) {
+	private static boolean isGetMethod(Method m) {
 		return !"getClass".equals(m.getName()) && m.getName().startsWith("get") || m.getName().startsWith("is");
 	}
 
