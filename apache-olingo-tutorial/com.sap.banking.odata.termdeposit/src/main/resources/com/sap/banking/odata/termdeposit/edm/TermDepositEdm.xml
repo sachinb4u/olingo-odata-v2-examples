@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<edmx:Edmx Version="1.0" xmlns:edmx="http://schemas.microsoft.com/ado/2007/06/edmx">
+	<edmx:DataServices xmlns:m="http://schemas.microsoft.com/ado/2007/08/dataservices/metadata" m:DataServiceVersion="1.0">
+		<Schema Namespace="com.sap.banking.termdeposit.beans" xmlns="http://schemas.microsoft.com/ado/2008/09/edm">
+			<EntityType Name="Account">
+				<Key>
+					<PropertyRef Name="Id" />
+				</Key>
+				<Property Name="Id" Type="Edm.String" />
+				<Property Name="AccountNumber" Type="Edm.String" />
+				<Property Name="BankId" Type="Edm.String" />
+				<Property Name="BankName" Type="Edm.String" />
+				<Property Name="Status" Type="Edm.String" />
+				<Property Name="Type" Type="Edm.String" />
+				<Property Name="CurrencyCode" Type="Edm.String" />
+				<Property Name="CurrentBalance" Type="Edm.Decimal" />
+			</EntityType>
+			<EntityType Name="TermDeposit" BaseType="com.sap.banking.termdeposit.beans.Account">
+				<Key>
+					<PropertyRef Name="Id" />
+				</Key>
+				<Property Name="Id" Type="Edm.String"/>
+				<Property Name="FromAccountId" Type="Edm.String" MaxLength="20" />
+				<Property Name="ToAccountId" Type="Edm.String" MaxLength="20" />
+				<Property Name="CustomerId" Type="Edm.String" MaxLength="20" />
+				<Property Name="FromAccountName" Type="Edm.String" MaxLength="50" />
+				<Property Name="ToAccountName" Type="Edm.String" MaxLength="50" />
+				<Property Name="PrincipalAmount" Type="Edm.Decimal" />
+				<Property Name="InterestAmount" Type="Edm.Decimal" />
+				<Property Name="InterestRate" Type="com.sap.banking.termdeposit.beans.DepositRate" />
+				<Property Name="OpenDate" Type="Edm.DateTime" />
+				<Property Name="CloseDate" Type="Edm.DateTime" />
+				<Property Name="ValueDate" Type="Edm.DateTime" />
+				<Property Name="MaturityDate" Type="Edm.DateTime" />
+				<Property Name="Tenure" Type="Edm.String" MaxLength="20" />
+				<NavigationProperty Name="FromAcount" Relationship="com.sap.banking.termdeposit.beans.TermDeposit_Account" FromRole="Role_TermDeposit" ToRole="Role_Account" />
+				<NavigationProperty Name="ToAcount" Relationship="com.sap.banking.termdeposit.beans.TermDeposit_Account" FromRole="Role_TermDeposit" ToRole="Role_Account" />
+			</EntityType>
+			<ComplexType Name="DepositRate">
+				<Property Name="Rate" Type="Edm.Double" />
+				<Property Name="Date" Type="Edm.DateTime" />
+				<Property Name="Term" Type="Edm.String" />
+			</ComplexType>
+			<Association Name="TermDeposit_Account">
+				<End Type="com.sap.banking.termdeposit.beans.TermDeposit" Multiplicity="1" Role="Role_TermDeposit" />
+				<End Type="com.sap.banking.termdeposit.beans.Account" Multiplicity="1" Role="Role_Account" />
+			</Association>
+			<EntityContainer Name="TermDepositContainer" m:IsDefaultEntityContainer="true">
+				<EntitySet Name="TermDeposits" EntityType="com.sap.banking.termdeposit.beans.TermDeposit" />
+			</EntityContainer>
+		</Schema>
+	</edmx:DataServices>
+</edmx:Edmx>

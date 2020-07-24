@@ -1,0 +1,46 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.apache.olingo</groupId>
+    <artifactId>olingo.odata2.sample.cars.parent</artifactId>
+    <version>1.0.0</version>
+  </parent>
+  <artifactId>olingo.odata2.sample.cars.web</artifactId>
+  <name>Cars-Sample-Project-WebApp</name>
+
+  <packaging>war</packaging>
+  <build>
+    <finalName>${project.artifactId}</finalName>
+  </build>
+  <dependencies>
+    <dependency>
+      <!-- required because of auto detection of web facet 2.5 -->
+      <groupId>javax.servlet</groupId>
+      <artifactId>servlet-api</artifactId>
+      <version>${version.javax.servlet}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.cxf</groupId>
+      <artifactId>cxf-rt-frontend-jaxrs</artifactId>
+      <version>${version.apache.cxf}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.olingo</groupId>
+      <artifactId>olingo.odata2.sample.cars.service</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+    	<groupId>com.sap.banking</groupId>
+    	<artifactId>com.sap.banking.odata.termdeposit</artifactId>
+    	<version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.olingo</groupId>
+      <artifactId>olingo-odata2-core</artifactId>
+      <version>${version.olingo}</version>
+    </dependency>
+  </dependencies>
+</project>
