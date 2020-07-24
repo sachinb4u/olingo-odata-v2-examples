@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 
+import org.apache.olingo.odata2.api.commons.HttpStatusCodes;
 import org.apache.olingo.odata2.api.edm.EdmEntitySet;
 import org.apache.olingo.odata2.api.edm.EdmEntityType;
 import org.apache.olingo.odata2.api.edm.EdmProperty;
@@ -18,15 +19,16 @@ import org.apache.olingo.odata2.api.ep.EntityProviderReadProperties;
 import org.apache.olingo.odata2.api.ep.EntityProviderWriteProperties;
 import org.apache.olingo.odata2.api.ep.entry.ODataEntry;
 import org.apache.olingo.odata2.api.exception.ODataException;
-import org.apache.olingo.odata2.api.exception.ODataNotImplementedException;
 import org.apache.olingo.odata2.api.processor.ODataResponse;
 import org.apache.olingo.odata2.api.processor.ODataSingleProcessor;
 import org.apache.olingo.odata2.api.uri.KeyPredicate;
+import org.apache.olingo.odata2.api.uri.info.DeleteUriInfo;
 import org.apache.olingo.odata2.api.uri.info.GetComplexPropertyUriInfo;
 import org.apache.olingo.odata2.api.uri.info.GetEntitySetUriInfo;
 import org.apache.olingo.odata2.api.uri.info.GetEntityUriInfo;
 import org.apache.olingo.odata2.api.uri.info.GetSimplePropertyUriInfo;
 import org.apache.olingo.odata2.api.uri.info.PostUriInfo;
+import org.apache.olingo.odata2.api.uri.info.PutMergePatchUriInfo;
 
 import com.sap.banking.termdeposit.beans.DepositRate;
 import com.sap.banking.termdeposit.beans.TermDeposit;
@@ -64,6 +66,10 @@ public class TermDepositSingleProcessor extends ODataSingleProcessor {
 
 		// Get record from Backend
 		TermDeposit result = dbStore.getTermDeposit(id);
+
+		if (result == null) {
+			return ODataResponse.status(HttpStatusCodes.NOT_FOUND).build();
+		}
 
 		// Get Properties for Entity
 		Map<String, Object> data = getPropertiesFromObject(result);
@@ -143,16 +149,6 @@ public class TermDepositSingleProcessor extends ODataSingleProcessor {
 	@Override
 	public ODataResponse createEntity(PostUriInfo uriInfo, InputStream content, String requestContentType, String contentType) throws ODataException {
 
-		// No support for creating and linking new entry
-		if (uriInfo.getNavigationSegments().size() > 0) {
-			throw new ODataNotImplementedException();
-		}
-
-		// No support for media resources
-		if (uriInfo.getStartEntitySet().getEntityType().hasStream()) {
-			throw new ODataNotImplementedException();
-		}
-
 		ODataEntry entry = EntityProvider.readEntry(requestContentType, uriInfo.getStartEntitySet(), content,
 				EntityProviderReadProperties.init().mergeSemantic(false).build());
 
@@ -183,6 +179,56 @@ public class TermDepositSingleProcessor extends ODataSingleProcessor {
 
 		return EntityProvider.writeEntry(contentType, uriInfo.getStartEntitySet(), createResult,
 				EntityProviderWriteProperties.serviceRoot(getContext().getPathInfo().getServiceRoot()).build());
+	}
+
+	/**
+	 * Update entity /(id) - PUT
+	 * 
+	 */
+	@Override
+	public ODataResponse updateEntity(PutMergePatchUriInfo uriInfo, InputStream content, String requestContentType, boolean merge, String contentType)
+			throws ODataException {
+
+		ODataEntry entry = EntityProvider.readEntry(requestContentType, uriInfo.getStartEntitySet(), content,
+				EntityProviderReadProperties.init().mergeSemantic(false).build());
+
+		// Get request Entity Properties
+		Map<String, Object> requestEntityProperties = entry.getProperties();
+
+		// Get Entity from DB
+		String id = uriInfo.getKeyPredicates().get(0).getLiteral();
+		TermDeposit dbTermDeposit = dbStore.getTermDeposit(id);
+
+		if (id == null || dbTermDeposit == null) {
+			return ODataResponse.status(HttpStatusCodes.NOT_FOUND).build();
+		}
+
+		// update/merge request Properties to DB object
+		setPropertiesToObject(dbTermDeposit, requestEntityProperties);
+
+		// Store updated object to database
+		dbStore.addTermDeposit(dbTermDeposit);
+
+		return ODataResponse.status(HttpStatusCodes.NO_CONTENT).build();
+	}
+
+	/**
+	 * Delete entity /(id) - DELETE
+	 * 
+	 */
+	@Override
+	public ODataResponse deleteEntity(DeleteUriInfo uriInfo, String contentType) throws ODataException {
+		if ("TermDeposits".equals(uriInfo.getTargetEntitySet().getName())) {
+			String id = uriInfo.getKeyPredicates().get(0).getLiteral();
+
+			boolean isDeleted = dbStore.delete(id);
+
+			if (isDeleted) {
+				return ODataResponse.status(HttpStatusCodes.NO_CONTENT).build();
+			}
+			return ODataResponse.status(HttpStatusCodes.NOT_FOUND).build();
+		}
+		return super.deleteEntity(uriInfo, contentType);
 	}
 
 	/**

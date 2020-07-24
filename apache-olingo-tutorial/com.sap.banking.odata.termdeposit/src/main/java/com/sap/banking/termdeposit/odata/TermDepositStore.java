@@ -60,8 +60,17 @@ public class TermDepositStore {
 	}
 
 	public TermDeposit addTermDeposit(TermDeposit deposit) {
-		deposit.setId(UUID.randomUUID().toString());
-		termsDb.put(deposit.getId(), deposit);
-		return termsDb.get(deposit.getId());
+		if (deposit.getId() != null && termsDb.containsKey(deposit.getId())) {
+			return termsDb.put(deposit.getId(), deposit);
+		} else {
+			deposit.setId(UUID.randomUUID().toString());
+			termsDb.put(deposit.getId(), deposit);
+			return termsDb.get(deposit.getId());
+		}
+	}
+
+	public boolean delete(String id) {
+
+		return termsDb.remove(id) != null;
 	}
 }
