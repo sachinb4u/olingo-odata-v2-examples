@@ -14,7 +14,7 @@ import com.sap.banking.termdeposit.beans.TermDeposit;
 
 public class TermDepositStore {
 	
-	
+	private Map<String, Account> accountDb = new ConcurrentHashMap<String, Account>();
 	private Map<String, TermDeposit> termsDb = new ConcurrentHashMap<String, TermDeposit>();
 	private static TermDepositStore instance = new TermDepositStore();
 	
@@ -41,14 +41,12 @@ public class TermDepositStore {
 		
 		dep1.setCloseDate(new Date());
 		dep1.setCustomerId("1234");
-		dep1.setFromAccountId("Deposit-4543");
 		dep1.setId("32432");
 		dep1.setInterestAmount(BigDecimal.valueOf(231));
 		dep1.setMaturityDate(new Date());
 		dep1.setOpenDate(new Date());
 		dep1.setPrincipalAmount(BigDecimal.valueOf(10234));
 		dep1.setTenure("5 years");
-		dep1.setToAccountId("23235");
 		dep1.setStatus("Pending");
 		
 		DepositRate interestRate = new DepositRate();
@@ -67,7 +65,8 @@ public class TermDepositStore {
 		fromAccount.setCurrentBalance(BigDecimal.valueOf(4232424.23));
 		fromAccount.setStatus("Active");
 
-		dep1.setFromAccount(fromAccount);
+		dep1.setFromAccountId(fromAccount.getId());
+		accountDb.put(fromAccount.getId(), fromAccount);
 
 		Account toAccount = new Account();
 		toAccount.setId("32432");
@@ -78,7 +77,8 @@ public class TermDepositStore {
 		toAccount.setStatus("Pending");
 		toAccount.setType("Deposit");
 
-		dep1.setToAccount(toAccount);
+		dep1.setToAccountId(toAccount.getId());
+		accountDb.put(toAccount.getId(), toAccount);
 
 		termsDb.put(dep1.getId(), dep1);
 	}
@@ -96,5 +96,13 @@ public class TermDepositStore {
 	public boolean delete(String id) {
 
 		return termsDb.remove(id) != null;
+	}
+
+	public List<Account> getAccounts() {
+		return new ArrayList<Account>(accountDb.values());
+	}
+
+	public Account getAccount(String id) {
+		return accountDb.get(id);
 	}
 }

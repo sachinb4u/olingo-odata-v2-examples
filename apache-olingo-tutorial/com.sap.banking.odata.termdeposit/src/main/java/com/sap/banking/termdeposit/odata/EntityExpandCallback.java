@@ -42,9 +42,9 @@ public class EntityExpandCallback implements OnWriteEntryContent {
 				TermDeposit dbTermDeposit = store.getTermDeposit(id);
 				Account account = null;
 				if (context.getNavigationProperty().getName().equals("FromAccount")) {
-					account = dbTermDeposit.getFromAccount();
+					account = store.getAccount(dbTermDeposit.getFromAccountId());
 				} else if (context.getNavigationProperty().getName().equals("ToAccount")) {
-					account = dbTermDeposit.getToAccount();
+					account = store.getAccount(dbTermDeposit.getToAccountId());
 				}
 
 				// Get Properties from object

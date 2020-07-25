@@ -110,9 +110,9 @@ public class TermDepositSingleProcessor extends ODataSingleProcessor {
 			NavigationSegment navSegment = uriInfo.getNavigationSegments().get(0);
 			Account account = null;
 			if (navSegment.getNavigationProperty().getName().equals("FromAccount")) {
-				account = result.getFromAccount();
+				account = dbStore.getAccount(result.getFromAccountId());
 			} else if (navSegment.getNavigationProperty().getName().equals("ToAccount")) {
-				account = result.getToAccount();
+				account = dbStore.getAccount(result.getToAccountId());
 			}
 			// Get Properties for Entity
 			Map<String, Object> data = getPropertiesFromObject(account);
