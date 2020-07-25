@@ -1,0 +1,481 @@
+{
+	"info": {
+		"_postman_id": "ec12452e-2fce-40ed-ba35-79a5912752f8",
+		"name": "Olingo OData v2 Tutorial",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "TermDeposits OData requests",
+			"item": [
+				{
+					"name": "TermDeposit $metada",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://{{host}}/{{context}}/TermDeposit.svc/$metadata",
+							"protocol": "http",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"{{context}}",
+								"TermDeposit.svc",
+								"$metadata"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Term Deposits - readEntitySet",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://{{host}}/{{context}}/TermDeposit.svc/TermDeposits?$format=json",
+							"protocol": "http",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"{{context}}",
+								"TermDeposit.svc",
+								"TermDeposits"
+							],
+							"query": [
+								{
+									"key": "$format",
+									"value": "json"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Term Deposit Entity - readEntity",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://{{host}}/{{context}}/TermDeposit.svc/TermDeposits('32432')",
+							"protocol": "http",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"{{context}}",
+								"TermDeposit.svc",
+								"TermDeposits('32432')"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Term Deposit Entity - readEntity NavigationProperty",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://{{host}}/{{context}}/TermDeposit.svc/TermDeposits('32432')/ToAccount?$format=json",
+							"protocol": "http",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"{{context}}",
+								"TermDeposit.svc",
+								"TermDeposits('32432')",
+								"ToAccount"
+							],
+							"query": [
+								{
+									"key": "$format",
+									"value": "json"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Term Deposit Entity - readEntity $expand",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://{{host}}/{{context}}/TermDeposit.svc/TermDeposits('32432')?$expand=FromAccount,ToAccount&$format=json",
+							"protocol": "http",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"{{context}}",
+								"TermDeposit.svc",
+								"TermDeposits('32432')"
+							],
+							"query": [
+								{
+									"key": "$expand",
+									"value": "FromAccount,ToAccount"
+								},
+								{
+									"key": "$format",
+									"value": "json"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Term Deposit SimpleProperty - readEntitySimpleProperty",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://{{host}}/{{context}}/TermDeposit.svc/TermDeposits('32432')/FromAccountId?$format=json",
+							"protocol": "http",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"{{context}}",
+								"TermDeposit.svc",
+								"TermDeposits('32432')",
+								"FromAccountId"
+							],
+							"query": [
+								{
+									"key": "$format",
+									"value": "json"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Term Deposit SimpleProperty - readEntitySimplePropertyValue",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://{{host}}/{{context}}/TermDeposit.svc/TermDeposits('32432')/FromAccountId/$value",
+							"protocol": "http",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"{{context}}",
+								"TermDeposit.svc",
+								"TermDeposits('32432')",
+								"FromAccountId",
+								"$value"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Term Deposit SimpleProperty Nested - readEntitySimpleProperty",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://{{host}}/{{context}}/TermDeposit.svc/TermDeposits('32432')/InterestRate/Term?$format=json",
+							"protocol": "http",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"{{context}}",
+								"TermDeposit.svc",
+								"TermDeposits('32432')",
+								"InterestRate",
+								"Term"
+							],
+							"query": [
+								{
+									"key": "$format",
+									"value": "json"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Term Deposit ComplextProperty - readEntityComplexProperty",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://{{host}}/{{context}}/TermDeposit.svc/TermDeposits('32432')/InterestRate?$format=json",
+							"protocol": "http",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"{{context}}",
+								"TermDeposit.svc",
+								"TermDeposits('32432')",
+								"InterestRate"
+							],
+							"query": [
+								{
+									"key": "$format",
+									"value": "json"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add TermDeposit - createEntity",
+					"protocolProfileBehavior": {
+						"disabledSystemHeaders": {
+							"accept": true
+						}
+					},
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"FromAccountId\" : \"2323\",\n    \"ToAccountId\" : \"4645\",\n    \"PrincipalAmount\" : \"555555\",\n    \"Tenure\" : \"10 Years\",\n    \"InterestRate\" : {\n        \"Rate\" : \"6.6\",\n        \"Term\" : \"2 Years\"\n    },\n    \"MaturityDate\" : \"/Date(1626825600000)/\"\n}"
+						},
+						"url": {
+							"raw": "http://{{host}}/{{context}}/TermDeposit.svc/TermDeposits",
+							"protocol": "http",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"{{context}}",
+								"TermDeposit.svc",
+								"TermDeposits"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update TermDeposit - updateEntity",
+					"protocolProfileBehavior": {
+						"disabledSystemHeaders": {
+							"accept": true
+						}
+					},
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"FromAccountId\" : \"2323\",\n    \"ToAccountId\" : \"4645\",\n    \"PrincipalAmount\" : \"555555\",\n    \"Tenure\" : \"10 Years\",\n    \"InterestRate\" : {\n        \"Rate\" : \"9.6\",\n        \"Term\" : \"2 Years\"\n    },\n    \"MaturityDate\" : \"/Date(1626825600000)/\"\n}"
+						},
+						"url": {
+							"raw": "http://{{host}}/{{context}}/TermDeposit.svc/TermDeposits('32432')",
+							"protocol": "http",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"{{context}}",
+								"TermDeposit.svc",
+								"TermDeposits('32432')"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete TermDeposit - deleteEntity",
+					"protocolProfileBehavior": {
+						"disabledSystemHeaders": {
+							"accept": true
+						}
+					},
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"FromAccountId\" : \"2323\",\n    \"ToAccountId\" : \"4645\",\n    \"PrincipalAmount\" : \"555555\",\n    \"Tenure\" : \"10 Years\",\n    \"InterestRate\" : {\n        \"Rate\" : \"6.6\",\n        \"Term\" : \"2 Years\"\n    }\n}"
+						},
+						"url": {
+							"raw": "http://{{host}}/{{context}}/TermDeposit.svc/TermDeposits('32432')",
+							"protocol": "http",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"{{context}}",
+								"TermDeposit.svc",
+								"TermDeposits('32432')"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Batch TermDeposit - executeBatch 1",
+					"protocolProfileBehavior": {
+						"disabledSystemHeaders": {
+							"user-agent": true,
+							"connection": true,
+							"content-type": true
+						}
+					},
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "multipart/mixed; boundary=batch_1234"
+							},
+							{
+								"key": "Accept",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "--batch_1234\nContent-Type: multipart/mixed; boundary=changeset_123\n\n--changeset_123\nContent-Type: application/http\nContent-Transfer-Encoding: binary\n\nPUT TermDeposits('32432') HTTP/1.1\nContent-Type: application/json\nContent-Length: 100\n\n{\n    \"FromAccountId\" : \"2323\",\n    \"ToAccountId\" : \"4645\",\n    \"PrincipalAmount\" : \"555555\",\n    \"Tenure\" : \"10 Years\",\n    \"InterestRate\" : {\n        \"Rate\" : \"9.6\",\n        \"Term\" : \"2 Years\"\n    },\n    \"MaturityDate\" : \"/Date(1626825600000)/\"\n}\n--changeset_123--\n--batch_1234--"
+						},
+						"url": {
+							"raw": "http://{{host}}/{{context}}/TermDeposit.svc/$batch?~debugMode=true",
+							"protocol": "http",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"{{context}}",
+								"TermDeposit.svc",
+								"$batch"
+							],
+							"query": [
+								{
+									"key": "~debugMode",
+									"value": "true"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Batch TermDeposit - executeBatch 2 with reference",
+					"protocolProfileBehavior": {
+						"disabledSystemHeaders": {
+							"user-agent": true,
+							"connection": true,
+							"content-type": true
+						}
+					},
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "multipart/mixed; boundary=batch_1234"
+							},
+							{
+								"key": "Accept",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "--batch_1234\nContent-Type: multipart/mixed; boundary=changeset_123\n\n--changeset_123\nContent-Type: application/http\nContent-Transfer-Encoding: binary\n\nPUT TermDeposits('32432') HTTP/1.1\nContent-Type: application/json\nContent-Length: 100\n\n{\n    \"FromAccountId\" : \"2323\",\n    \"ToAccountId\" : \"4645\",\n    \"PrincipalAmount\" : \"555555\",\n    \"Tenure\" : \"10 Years\",\n    \"InterestRate\" : {\n        \"Rate\" : \"9.6\",\n        \"Term\" : \"2 Years\"\n    },\n    \"MaturityDate\" : \"/Date(1626825600000)/\"\n}\n--changeset_123--\n--batch_1234--"
+						},
+						"url": {
+							"raw": "http://{{host}}/{{context}}/TermDeposit.svc/$batch?~debugMode=true",
+							"protocol": "http",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"{{context}}",
+								"TermDeposit.svc",
+								"$batch"
+							],
+							"query": [
+								{
+									"key": "~debugMode",
+									"value": "true"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "46e6c85d-e345-4d93-9fdf-17c528817842",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "3e952299-f107-4766-b1e8-664bc6c9cf14",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			],
+			"protocolProfileBehavior": {}
+		}
+	],
+	"protocolProfileBehavior": {}
+}

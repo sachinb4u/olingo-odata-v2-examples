@@ -6,6 +6,7 @@ import static java.util.stream.Collectors.toMap;
 import java.io.InputStream;
 import java.lang.reflect.Method;
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
@@ -13,22 +14,28 @@ import java.util.Map;
 import java.util.stream.Stream;
 
 import org.apache.olingo.odata2.api.ODataCallback;
+import org.apache.olingo.odata2.api.batch.BatchHandler;
+import org.apache.olingo.odata2.api.batch.BatchRequestPart;
+import org.apache.olingo.odata2.api.batch.BatchResponsePart;
 import org.apache.olingo.odata2.api.commons.HttpStatusCodes;
 import org.apache.olingo.odata2.api.edm.EdmEntitySet;
 import org.apache.olingo.odata2.api.edm.EdmEntityType;
 import org.apache.olingo.odata2.api.edm.EdmProperty;
 import org.apache.olingo.odata2.api.ep.EntityProvider;
+import org.apache.olingo.odata2.api.ep.EntityProviderBatchProperties;
 import org.apache.olingo.odata2.api.ep.EntityProviderReadProperties;
 import org.apache.olingo.odata2.api.ep.EntityProviderWriteProperties;
 import org.apache.olingo.odata2.api.ep.EntityProviderWriteProperties.ODataEntityProviderPropertiesBuilder;
 import org.apache.olingo.odata2.api.ep.entry.ODataEntry;
 import org.apache.olingo.odata2.api.exception.ODataException;
 import org.apache.olingo.odata2.api.exception.ODataNotFoundException;
+import org.apache.olingo.odata2.api.processor.ODataRequest;
 import org.apache.olingo.odata2.api.processor.ODataResponse;
 import org.apache.olingo.odata2.api.processor.ODataSingleProcessor;
 import org.apache.olingo.odata2.api.uri.ExpandSelectTreeNode;
 import org.apache.olingo.odata2.api.uri.KeyPredicate;
 import org.apache.olingo.odata2.api.uri.NavigationSegment;
+import org.apache.olingo.odata2.api.uri.PathInfo;
 import org.apache.olingo.odata2.api.uri.UriParser;
 import org.apache.olingo.odata2.api.uri.info.DeleteUriInfo;
 import org.apache.olingo.odata2.api.uri.info.GetComplexPropertyUriInfo;
@@ -275,6 +282,51 @@ public class TermDepositSingleProcessor extends ODataSingleProcessor {
 			return ODataResponse.status(HttpStatusCodes.NOT_FOUND).build();
 		}
 		return super.deleteEntity(uriInfo, contentType);
+	}
+
+	/**
+	 * Execute batch
+	 * 
+	 */
+	@Override
+	public ODataResponse executeBatch(BatchHandler handler, String contentType, InputStream content) throws ODataException {
+		PathInfo pathInfo = getContext().getPathInfo();
+		List<BatchResponsePart> batchResponsesParts = new ArrayList<>();
+
+		EntityProviderBatchProperties batchProperties = EntityProviderBatchProperties.init().pathInfo(pathInfo).build();
+		List<BatchRequestPart> batchParts = EntityProvider.parseBatchRequest(contentType, content, batchProperties);
+
+		for (BatchRequestPart batchRequestPart : batchParts) {
+			batchResponsesParts.add(handler.handleBatchPart(batchRequestPart));
+		}
+
+		return EntityProvider.writeBatchResponse(batchResponsesParts);
+	}
+
+	/**
+	 * Execute changeSet
+	 * 
+	 */
+	@Override
+	public BatchResponsePart executeChangeSet(BatchHandler handler, List<ODataRequest> requests) throws ODataException {
+
+		List<ODataResponse> responses = new ArrayList<>();
+
+		for (ODataRequest oDataRequest : requests) {
+			ODataResponse oDataResponse = handler.handleRequest(oDataRequest);
+			if (oDataResponse.getStatus().getStatusCode() >= HttpStatusCodes.BAD_REQUEST.getStatusCode()) {
+				// Rollback
+				List<ODataResponse> errorResponses = new ArrayList<>();
+				errorResponses.add(oDataResponse);
+
+				// If a request within a ChangeSet fails, a Batch Response Part contains only
+				// the error response and the flag changeSet is set to false.
+				return BatchResponsePart.responses(errorResponses).changeSet(false).build();
+			}
+			responses.add(oDataResponse);
+		}
+
+		return BatchResponsePart.responses(responses).changeSet(true).build();
 	}
 
 	/**
