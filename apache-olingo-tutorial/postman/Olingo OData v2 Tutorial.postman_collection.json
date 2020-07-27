@@ -75,6 +75,27 @@
 					"response": []
 				},
 				{
+					"name": "Get Term Deposit Entity - readEntity : $value entityMedia",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://{{host}}/{{context}}/TermDeposit.svc/TermDeposits('32432')/$value",
+							"protocol": "http",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"{{context}}",
+								"TermDeposit.svc",
+								"TermDeposits('32432')",
+								"$value"
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "Get Term Deposit Entity - readEntity NavigationProperty",
 					"request": {
 						"method": "GET",
