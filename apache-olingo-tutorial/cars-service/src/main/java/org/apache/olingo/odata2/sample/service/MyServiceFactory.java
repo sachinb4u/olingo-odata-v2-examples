@@ -7,6 +7,7 @@ import org.apache.olingo.odata2.api.exception.ODataException;
 import org.apache.olingo.odata2.api.processor.ODataContext;
 import org.apache.olingo.odata2.api.processor.ODataSingleProcessor;
 
+
 public class MyServiceFactory extends ODataServiceFactory {
 
   @Override

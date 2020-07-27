@@ -1,11 +1,17 @@
 package org.apache.olingo.odata2.sample.service;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
+import org.apache.olingo.odata2.api.edm.EdmEntitySet;
+import org.apache.olingo.odata2.api.edm.EdmException;
 
 public class DataStore {
 
@@ -106,6 +112,51 @@ public class DataStore {
     return address;
   }
 
+  public Map<String, Object> getDriver(int id) {
+    Map<String, Object> data = null;
+    Calendar updated = Calendar.getInstance(TimeZone.getTimeZone("GMT"));
+    
+    switch (id) {
+    case 1:
+      updated.set(2012, 12, 19);
+      data = createDriver(id, "Michael", "Shoemaker", "The One", null, updated);
+      break;
+      
+    case 2:
+      updated.set(2012, 12, 18);
+      data = createDriver(id, "Nico", "Horsehill", null, 2, updated);
+      break;
+
+    case 3:
+      updated.set(2011, 11, 11);
+      data = createDriver(id, "Kimi", "Heikkinen", "Iceman", 3, updated);
+      break;
+
+    default:
+      break;
+    }
+    
+    return data;
+  }
+
+  private Map<String, Object> createDriver(int id, String name, String surname, String nickname, Integer carId, Calendar updated) {
+    Map<String, Object> data = new HashMap<String, Object>();
+    data.put("Id", id);
+    data.put("Name", name);
+    data.put("Surname", surname);
+    data.put("Nickname", nickname);
+    data.put("CarId", carId);
+    data.put("Updated", updated);
+    return data;
+  }
+
+  public List<Map<String, Object>> getDrivers() {
+    List<Map<String, Object>> drivers = new ArrayList<Map<String, Object>>();
+    drivers.add(getDriver(1));
+    drivers.add(getDriver(2));
+    drivers.add(getDriver(3));
+    return drivers;
+  }
 
   public List<Map<String, Object>> getCars() {
     List<Map<String, Object>> cars = new ArrayList<Map<String, Object>>();
@@ -145,6 +196,60 @@ public class DataStore {
       if(manufacturerId != null) {
         return getManufacturer((Integer) manufacturerId);
       }
+    }
+    return null;
+  }
+
+  public Map<String, Object> getDriverFor(int carId) {
+    List<Map<String, Object>> drivers = getDrivers();
+    
+    for (Map<String,Object> driver: drivers) {
+      if(Integer.valueOf(carId).equals(driver.get("CarId"))) {
+        return driver;
+      }
+    }
+    return null;
+  }
+
+  public Map<String, Object> getCarFor(int driverKey) {
+    Map<String, Object> driver = getDriver(driverKey);
+    if(driver != null) {
+      Object carId = driver.get("CarId");
+      if(carId != null) {
+        return getCar((Integer) carId);
+      }
+    }
+    return null;
+  }
+
+  public byte[] readDriverImage(EdmEntitySet entitySet, int id) {
+    try {
+      if(MyEdmProvider.ENTITY_SET_NAME_DRIVERS.equals(entitySet.getName())) {
+        int capacity = 1024 * 1000;
+        byte[] temp = new byte[capacity];
+        InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream("Driver_" + id + ".png");
+        if(is == null) {
+          return null;
+        }
+
+        ByteBuffer result = ByteBuffer.allocate(capacity);
+        int read = is.read(temp);
+        while (read >= 0) {
+          if(result.remaining() < read) {
+            ByteBuffer tmpResult = ByteBuffer.allocate(result.capacity() + capacity);
+            tmpResult.put(result);
+            result = tmpResult;
+          }
+          result.put(temp, 0, read);
+          read = is.read(temp);
+        }
+        
+        return Arrays.copyOf(result.array(), result.position());
+      }
+    } catch (EdmException e) {
+      e.printStackTrace();
+    } catch (IOException e) {
+      e.printStackTrace();
     }
     return null;
   }

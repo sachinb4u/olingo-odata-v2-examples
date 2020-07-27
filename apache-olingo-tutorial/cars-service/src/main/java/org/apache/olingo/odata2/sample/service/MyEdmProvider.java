@@ -23,6 +23,7 @@ import org.apache.olingo.odata2.api.edm.provider.EntityType;
 import org.apache.olingo.odata2.api.edm.provider.Facets;
 import org.apache.olingo.odata2.api.edm.provider.FunctionImport;
 import org.apache.olingo.odata2.api.edm.provider.Key;
+import org.apache.olingo.odata2.api.edm.provider.Mapping;
 import org.apache.olingo.odata2.api.edm.provider.NavigationProperty;
 import org.apache.olingo.odata2.api.edm.provider.Property;
 import org.apache.olingo.odata2.api.edm.provider.PropertyRef;
@@ -35,24 +36,31 @@ public class MyEdmProvider extends EdmProvider {
 
   static final String ENTITY_SET_NAME_MANUFACTURERS = "Manufacturers";
   static final String ENTITY_SET_NAME_CARS = "Cars";
+  static final String ENTITY_SET_NAME_DRIVERS = "Drivers";
   static final String ENTITY_NAME_MANUFACTURER = "Manufacturer";
   static final String ENTITY_NAME_CAR = "Car";
+  static final String ENTITY_NAME_DRIVER = "Driver";
 
   private static final String NAMESPACE = "org.apache.olingo.odata2.ODataCars";
 
   private static final FullQualifiedName ENTITY_TYPE_1_1 = new FullQualifiedName(NAMESPACE, ENTITY_NAME_CAR);
   private static final FullQualifiedName ENTITY_TYPE_1_2 = new FullQualifiedName(NAMESPACE, ENTITY_NAME_MANUFACTURER);
+  private static final FullQualifiedName ENTITY_TYPE_1_3 = new FullQualifiedName(NAMESPACE, ENTITY_NAME_DRIVER);
 
   private static final FullQualifiedName COMPLEX_TYPE = new FullQualifiedName(NAMESPACE, "Address");
 
   private static final FullQualifiedName ASSOCIATION_CAR_MANUFACTURER = new FullQualifiedName(NAMESPACE, "Car_Manufacturer_Manufacturer_Cars");
+  private static final FullQualifiedName ASSOCIATION_DRIVER_CAR = new FullQualifiedName(NAMESPACE, "Driver_Car-Car_Driver");
 
   private static final String ROLE_1_1 = "Car_Manufacturer";
   private static final String ROLE_1_2 = "Manufacturer_Cars";
+  private static final String ROLE_1_3 = "Car_Driver";
+  private static final String ROLE_3_1 = "Driver_Car";
 
   private static final String ENTITY_CONTAINER = "ODataCarsEntityContainer";
 
   private static final String ASSOCIATION_SET = "Cars_Manufacturers";
+  private static final String ASSOCIATION_SET_CARS_DRIVERS = "Cars_Drivers";
 
   private static final String FUNCTION_IMPORT = "NumberOfCars";
 
@@ -66,6 +74,7 @@ public class MyEdmProvider extends EdmProvider {
     List<EntityType> entityTypes = new ArrayList<EntityType>();
     entityTypes.add(getEntityType(ENTITY_TYPE_1_1));
     entityTypes.add(getEntityType(ENTITY_TYPE_1_2));
+    entityTypes.add(getEntityType(ENTITY_TYPE_1_3));
     schema.setEntityTypes(entityTypes);
 
     List<ComplexType> complexTypes = new ArrayList<ComplexType>();
@@ -74,6 +83,7 @@ public class MyEdmProvider extends EdmProvider {
 
     List<Association> associations = new ArrayList<Association>();
     associations.add(getAssociation(ASSOCIATION_CAR_MANUFACTURER));
+    associations.add(getAssociation(ASSOCIATION_DRIVER_CAR));
     schema.setAssociations(associations);
 
     List<EntityContainer> entityContainers = new ArrayList<EntityContainer>();
@@ -83,10 +93,12 @@ public class MyEdmProvider extends EdmProvider {
     List<EntitySet> entitySets = new ArrayList<EntitySet>();
     entitySets.add(getEntitySet(ENTITY_CONTAINER, ENTITY_SET_NAME_CARS));
     entitySets.add(getEntitySet(ENTITY_CONTAINER, ENTITY_SET_NAME_MANUFACTURERS));
+    entitySets.add(getEntitySet(ENTITY_CONTAINER, ENTITY_SET_NAME_DRIVERS));
     entityContainer.setEntitySets(entitySets);
 
     List<AssociationSet> associationSets = new ArrayList<AssociationSet>();
     associationSets.add(getAssociationSet(ENTITY_CONTAINER, ASSOCIATION_CAR_MANUFACTURER, ENTITY_SET_NAME_MANUFACTURERS, ROLE_1_2));
+    associationSets.add(getAssociationSet(ENTITY_CONTAINER, ASSOCIATION_DRIVER_CAR, ENTITY_SET_NAME_DRIVERS, ROLE_3_1));
     entityContainer.setAssociationSets(associationSets);
 
     List<FunctionImport> functionImports = new ArrayList<FunctionImport>();
@@ -125,6 +137,8 @@ public class MyEdmProvider extends EdmProvider {
         List<NavigationProperty> navigationProperties = new ArrayList<NavigationProperty>();
         navigationProperties.add(new NavigationProperty().setName("Manufacturer")
             .setRelationship(ASSOCIATION_CAR_MANUFACTURER).setFromRole(ROLE_1_1).setToRole(ROLE_1_2));
+        navigationProperties.add(new NavigationProperty().setName("Driver")
+            .setRelationship(ASSOCIATION_DRIVER_CAR).setFromRole(ROLE_1_3).setToRole(ROLE_3_1));
 
         //Key
         List<PropertyRef> keyProperties = new ArrayList<PropertyRef>();
@@ -163,6 +177,34 @@ public class MyEdmProvider extends EdmProvider {
             .setKey(key)
             .setNavigationProperties(navigationProperties);
 
+      } else if (ENTITY_TYPE_1_3.getName().equals(edmFQName.getName())) {
+        List<Property> properties = new ArrayList<Property>();
+        properties.add(new SimpleProperty().setName("Id").setType(EdmSimpleTypeKind.Int32).setFacets(new Facets().setNullable(false)));
+        properties.add(new SimpleProperty().setName("CarId").setType(EdmSimpleTypeKind.Int32));
+        properties.add(new SimpleProperty().setName("Name").setType(EdmSimpleTypeKind.String).setFacets(new Facets().setNullable(false).setMaxLength(50)));
+        properties.add(new SimpleProperty().setName("Surname").setType(EdmSimpleTypeKind.String).setFacets(new Facets().setNullable(false).setMaxLength(80))
+                        .setCustomizableFeedMappings(new CustomizableFeedMappings().setFcTargetPath(EdmTargetPath.SYNDICATION_TITLE)));
+        properties.add(new SimpleProperty().setName("Nickname").setType(EdmSimpleTypeKind.String).setFacets(new Facets().setNullable(true).setMaxLength(50)));
+        properties.add(new SimpleProperty().setName("Updated").setType(EdmSimpleTypeKind.DateTime)
+            .setFacets(new Facets().setNullable(false).setConcurrencyMode(EdmConcurrencyMode.Fixed))
+            .setCustomizableFeedMappings(new CustomizableFeedMappings().setFcTargetPath(EdmTargetPath.SYNDICATION_UPDATED)));
+
+        // Navigation properties
+        List<NavigationProperty> navigationProperties = new ArrayList<NavigationProperty>();
+        navigationProperties.add(new NavigationProperty().setName("Car").setRelationship(ASSOCIATION_DRIVER_CAR).setFromRole(ROLE_3_1).setToRole(ROLE_1_3));
+        
+        // Key
+        List<PropertyRef> keyProperties = new ArrayList<PropertyRef>();
+        keyProperties.add(new PropertyRef().setName("Id"));
+        Key key = new Key().setKeys(keyProperties);
+
+        // finish
+        return new EntityType().setName(ENTITY_TYPE_1_3.getName())
+            .setProperties(properties)
+            .setHasStream(true)
+            .setKey(key)
+            .setNavigationProperties(navigationProperties)
+            .setMapping(new Mapping().setMimeType("image/png"));
       }
     }
 
@@ -192,6 +234,10 @@ public class MyEdmProvider extends EdmProvider {
         return new Association().setName(ASSOCIATION_CAR_MANUFACTURER.getName())
             .setEnd1(new AssociationEnd().setType(ENTITY_TYPE_1_1).setRole(ROLE_1_1).setMultiplicity(EdmMultiplicity.MANY))
             .setEnd2(new AssociationEnd().setType(ENTITY_TYPE_1_2).setRole(ROLE_1_2).setMultiplicity(EdmMultiplicity.ONE));
+      } else if (ASSOCIATION_DRIVER_CAR.getName().equals(edmFQName.getName())) {
+        return new Association().setName(ASSOCIATION_DRIVER_CAR.getName())
+            .setEnd1(new AssociationEnd().setType(ENTITY_TYPE_1_1).setRole(ROLE_1_3).setMultiplicity(EdmMultiplicity.ONE))
+            .setEnd2(new AssociationEnd().setType(ENTITY_TYPE_1_3).setRole(ROLE_3_1).setMultiplicity(EdmMultiplicity.ONE));
       }
     }
     return null;
@@ -204,6 +250,8 @@ public class MyEdmProvider extends EdmProvider {
         return new EntitySet().setName(name).setEntityType(ENTITY_TYPE_1_1);
       } else if (ENTITY_SET_NAME_MANUFACTURERS.equals(name)) {
         return new EntitySet().setName(name).setEntityType(ENTITY_TYPE_1_2);
+      } else if(ENTITY_SET_NAME_DRIVERS.equals(name)) {
+        return new EntitySet().setName(name).setEntityType(ENTITY_TYPE_1_3);
       }
     }
     return null;
@@ -217,6 +265,11 @@ public class MyEdmProvider extends EdmProvider {
             .setAssociation(ASSOCIATION_CAR_MANUFACTURER)
             .setEnd1(new AssociationSetEnd().setRole(ROLE_1_2).setEntitySet(ENTITY_SET_NAME_MANUFACTURERS))
             .setEnd2(new AssociationSetEnd().setRole(ROLE_1_1).setEntitySet(ENTITY_SET_NAME_CARS));
+      } else if (ASSOCIATION_DRIVER_CAR.equals(association)) {
+        return new AssociationSet().setName(ASSOCIATION_SET_CARS_DRIVERS)
+            .setAssociation(ASSOCIATION_DRIVER_CAR)
+            .setEnd1(new AssociationSetEnd().setRole(ROLE_3_1).setEntitySet(ENTITY_SET_NAME_DRIVERS))
+            .setEnd2(new AssociationSetEnd().setRole(ROLE_1_3).setEntitySet(ENTITY_SET_NAME_CARS));
       }
     }
     return null;
