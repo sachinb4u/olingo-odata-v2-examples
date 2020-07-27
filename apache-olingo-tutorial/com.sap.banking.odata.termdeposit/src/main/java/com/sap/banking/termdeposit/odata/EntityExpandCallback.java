@@ -13,6 +13,7 @@ import org.apache.olingo.odata2.api.exception.ODataApplicationException;
 
 import com.sap.banking.termdeposit.beans.Account;
 import com.sap.banking.termdeposit.beans.TermDeposit;
+import com.sap.banking.termdeposit.service.TermDepositStore;
 
 public class EntityExpandCallback implements OnWriteEntryContent {
 

@@ -15,7 +15,7 @@
 				<Property Name="CurrencyCode" Type="Edm.String" />
 				<Property Name="CurrentBalance" Type="Edm.Decimal" />
 			</EntityType>
-			<EntityType Name="TermDeposit" BaseType="com.sap.banking.termdeposit.beans.Account">
+			<EntityType Name="TermDeposit" BaseType="com.sap.banking.termdeposit.beans.Account" m:HasStream="true">
 				<Key>
 					<PropertyRef Name="Id" />
 				</Key>

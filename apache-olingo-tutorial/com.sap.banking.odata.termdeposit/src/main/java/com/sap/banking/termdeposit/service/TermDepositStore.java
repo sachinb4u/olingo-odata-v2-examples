@@ -1,7 +1,10 @@
-package com.sap.banking.termdeposit.odata;
+package com.sap.banking.termdeposit.service;
 
+import java.io.InputStream;
 import java.math.BigDecimal;
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -104,5 +107,34 @@ public class TermDepositStore {
 
 	public Account getAccount(String id) {
 		return accountDb.get(id);
+	}
+
+	public byte[] getTermDepositCertificate(String id) {
+		String certFileName = "certificates/term-deposit-certificate-" + id + ".pdf";
+		final int CAPACITY = 1024 * 1000;
+
+		try {
+			InputStream fis = this.getClass().getClassLoader().getResourceAsStream(certFileName);
+			if (fis == null) {
+				return null;
+			}
+			ByteBuffer buffer = ByteBuffer.allocate(CAPACITY);
+			byte[] bytesArr = new byte[CAPACITY];
+
+			int read = fis.read(bytesArr);
+			while (read >= 0) {
+				if (buffer.remaining() < read) {
+					ByteBuffer tmpBuffer = ByteBuffer.allocate(buffer.capacity() + CAPACITY);
+					tmpBuffer.put(buffer);
+					buffer = tmpBuffer;
+				}
+				buffer.put(bytesArr, 0, read);
+				read = fis.read(bytesArr);
+			}
+			return Arrays.copyOf(buffer.array(), buffer.position());
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
+		return null;
 	}
 }

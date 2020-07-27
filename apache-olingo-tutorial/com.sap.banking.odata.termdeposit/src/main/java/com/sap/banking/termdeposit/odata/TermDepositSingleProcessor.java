@@ -41,6 +41,7 @@ import org.apache.olingo.odata2.api.uri.info.DeleteUriInfo;
 import org.apache.olingo.odata2.api.uri.info.GetComplexPropertyUriInfo;
 import org.apache.olingo.odata2.api.uri.info.GetEntitySetUriInfo;
 import org.apache.olingo.odata2.api.uri.info.GetEntityUriInfo;
+import org.apache.olingo.odata2.api.uri.info.GetMediaResourceUriInfo;
 import org.apache.olingo.odata2.api.uri.info.GetSimplePropertyUriInfo;
 import org.apache.olingo.odata2.api.uri.info.PostUriInfo;
 import org.apache.olingo.odata2.api.uri.info.PutMergePatchUriInfo;
@@ -48,6 +49,7 @@ import org.apache.olingo.odata2.api.uri.info.PutMergePatchUriInfo;
 import com.sap.banking.termdeposit.beans.Account;
 import com.sap.banking.termdeposit.beans.DepositRate;
 import com.sap.banking.termdeposit.beans.TermDeposit;
+import com.sap.banking.termdeposit.service.TermDepositStore;
 
 public class TermDepositSingleProcessor extends ODataSingleProcessor {
 
@@ -327,6 +329,29 @@ public class TermDepositSingleProcessor extends ODataSingleProcessor {
 		}
 
 		return BatchResponsePart.responses(responses).changeSet(true).build();
+	}
+
+	/**
+	 * Download Term Deposit Certificate
+	 * 
+	 */
+	@Override
+	public ODataResponse readEntityMedia(GetMediaResourceUriInfo uriInfo, String contentType) throws ODataException {
+		final EdmEntitySet entitySet = uriInfo.getStartEntitySet();
+		if ("TermDeposits".equals(entitySet.getName())) {
+			String termDepositId = uriInfo.getKeyPredicates().get(0).getLiteral();
+			byte[] depositCertificate = dbStore.getTermDepositCertificate(termDepositId);
+			if (depositCertificate == null) {
+				throw new ODataNotFoundException(ODataNotFoundException.ENTITY);
+			}
+			String mimeType = "application/pdf";
+			String contentDespositionHeader = "Content-disposition";
+			String attachmentFileName = "attachment; filename=term-deposit-certificate-" + termDepositId + ".pdf";
+			return ODataResponse.fromResponse(EntityProvider.writeBinary(mimeType, depositCertificate)).header(contentDespositionHeader, attachmentFileName)
+					.build();
+
+		}
+		return super.readEntityMedia(uriInfo, contentType);
 	}
 
 	/**
