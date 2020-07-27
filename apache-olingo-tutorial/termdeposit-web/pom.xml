@@ -4,7 +4,7 @@
 
   <parent>
     <groupId>org.apache.olingo</groupId>
-    <artifactId>olingo.odata2.sample.cars.parent</artifactId>
+    <artifactId>olingo.odata2.sample.termdeposit.parent</artifactId>
     <version>1.0.0</version>
   </parent>
   <artifactId>termdeposit-web</artifactId>
@@ -26,11 +26,6 @@
       <groupId>org.apache.cxf</groupId>
       <artifactId>cxf-rt-frontend-jaxrs</artifactId>
       <version>${version.apache.cxf}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.olingo</groupId>
-      <artifactId>olingo.odata2.sample.cars.service</artifactId>
-      <version>${project.version}</version>
     </dependency>
     <dependency>
     	<groupId>com.sap.banking</groupId>

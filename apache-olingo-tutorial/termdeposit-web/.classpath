@@ -1,12 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
+	<classpathentry kind="src" output="target/test-classes" path="src/test/java">
+		<attributes>
+			<attribute name="optional" value="true"/>
+			<attribute name="maven.pomderived" value="true"/>
+			<attribute name="test" value="true"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="src" output="target/classes" path="src/main/java">
+		<attributes>
+			<attribute name="optional" value="true"/>
+			<attribute name="maven.pomderived" value="true"/>
+		</attributes>
+	</classpathentry>
 	<classpathentry kind="var" path="M2_REPO/javax/servlet/servlet-api/2.5/servlet-api-2.5.jar" sourcepath="M2_REPO/javax/servlet/servlet-api/2.5/servlet-api-2.5-sources.jar"/>
 	<classpathentry kind="var" path="M2_REPO/javax/ws/rs/javax.ws.rs-api/2.0-m10/javax.ws.rs-api-2.0-m10.jar" sourcepath="M2_REPO/javax/ws/rs/javax.ws.rs-api/2.0-m10/javax.ws.rs-api-2.0-m10-sources.jar">
 		<attributes>
 			<attribute name="javadoc_location" value="jar:file:/Users/i313873/.m2/repository/javax/ws/rs/javax.ws.rs-api/2.0-m10/javax.ws.rs-api-2.0-m10-javadoc.jar!/"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.6">
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8">
 		<attributes>
 			<attribute name="maven.pomderived" value="true"/>
 		</attributes>
@@ -58,7 +71,7 @@
 			<attribute name="javadoc_location" value="jar:file:/Users/i313873/.m2/repository/org/apache/cxf/cxf-rt-transports-http/2.7.5/cxf-rt-transports-http-2.7.5-javadoc.jar!/"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="src" path="/olingo.odata2.sample.cars.service"/>
+	<classpathentry kind="src" path="/termdeposit-odata-service"/>
 	<classpathentry kind="var" path="M2_REPO/org/apache/olingo/olingo-odata2-api/1.2.0/olingo-odata2-api-1.2.0.jar" sourcepath="M2_REPO/org/apache/olingo/olingo-odata2-api/1.2.0/olingo-odata2-api-1.2.0-sources.jar">
 		<attributes>
 			<attribute name="javadoc_location" value="jar:file:/Users/i313873/.m2/repository/org/apache/olingo/olingo-odata2-api/1.2.0/olingo-odata2-api-1.2.0-javadoc.jar!/"/>
@@ -79,7 +92,6 @@
 			<attribute name="javadoc_location" value="jar:file:/Users/i313873/.m2/repository/log4j/log4j/1.2.17/log4j-1.2.17-javadoc.jar!/"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="src" path="/termdeposit-odata-service"/>
 	<classpathentry kind="var" path="M2_REPO/org/apache/olingo/olingo-odata2-core/1.2.0/olingo-odata2-core-1.2.0.jar" sourcepath="M2_REPO/org/apache/olingo/olingo-odata2-core/1.2.0/olingo-odata2-core-1.2.0-sources.jar">
 		<attributes>
 			<attribute name="javadoc_location" value="jar:file:/Users/i313873/.m2/repository/org/apache/olingo/olingo-odata2-core/1.2.0/olingo-odata2-core-1.2.0-javadoc.jar!/"/>
@@ -93,19 +105,6 @@
 	<classpathentry kind="var" path="M2_REPO/com/google/code/gson/gson/2.2.2/gson-2.2.2.jar" sourcepath="M2_REPO/com/google/code/gson/gson/2.2.2/gson-2.2.2-sources.jar">
 		<attributes>
 			<attribute name="javadoc_location" value="jar:file:/Users/i313873/.m2/repository/com/google/code/gson/gson/2.2.2/gson-2.2.2-javadoc.jar!/"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="src" output="target/classes" path="src/main/java">
-		<attributes>
-			<attribute name="optional" value="true"/>
-			<attribute name="maven.pomderived" value="true"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="src" output="target/test-classes" path="src/test/java">
-		<attributes>
-			<attribute name="optional" value="true"/>
-			<attribute name="maven.pomderived" value="true"/>
-			<attribute name="test" value="true"/>
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="con" path="org.eclipse.m2e.MAVEN2_CLASSPATH_CONTAINER">

@@ -9,20 +9,6 @@
   </welcome-file-list>
 
   <servlet>
-    <servlet-name>MyODataSampleServlet</servlet-name>
-    <servlet-class>org.apache.cxf.jaxrs.servlet.CXFNonSpringJaxrsServlet</servlet-class>
-    <init-param>
-      <param-name>javax.ws.rs.Application</param-name>
-      <param-value>org.apache.olingo.odata2.core.rest.app.ODataApplication</param-value>
-    </init-param>
-    <init-param>
-      <param-name>org.apache.olingo.odata2.service.factory</param-name>
-      <param-value>org.apache.olingo.odata2.sample.service.MyServiceFactory</param-value>
-    </init-param>
-    <load-on-startup>1</load-on-startup>
-  </servlet>
-
-  <servlet>
     <servlet-name>TermDepositODataSampleServlet</servlet-name>
     <servlet-class>org.apache.cxf.jaxrs.servlet.CXFNonSpringJaxrsServlet</servlet-class>
     <init-param>
@@ -35,12 +21,6 @@
     </init-param>
     <load-on-startup>1</load-on-startup>
   </servlet>
-  
-  
-  <servlet-mapping>
-    <servlet-name>MyODataSampleServlet</servlet-name>
-    <url-pattern>/MyODataSample.svc/*</url-pattern>
-  </servlet-mapping>
   
   <servlet-mapping>
     <servlet-name>TermDepositODataSampleServlet</servlet-name>
