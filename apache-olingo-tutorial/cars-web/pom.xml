@@ -7,8 +7,8 @@
     <artifactId>olingo.odata2.sample.cars.parent</artifactId>
     <version>1.0.0</version>
   </parent>
-  <artifactId>olingo.odata2.sample.cars.web</artifactId>
-  <name>Cars-Sample-Project-WebApp</name>
+  <artifactId>termdeposit-web</artifactId>
+  <name>TermDeposit-Sample-Project-WebApp</name>
 
   <packaging>war</packaging>
   <build>
@@ -34,7 +34,7 @@
     </dependency>
     <dependency>
     	<groupId>com.sap.banking</groupId>
-    	<artifactId>com.sap.banking.odata.termdeposit</artifactId>
+    	<artifactId>termdeposit-odata-service</artifactId>
     	<version>${project.version}</version>
     </dependency>
     <dependency>

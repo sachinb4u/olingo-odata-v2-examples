@@ -15,12 +15,27 @@
     </div>
     <div>
       <ul>
-        <li>Entity Sets
+		<li>Entity Sets
           <ul>
             <li><a href="MyODataSample.svc/Cars">/Cars</a></li>        
             <li><a href="MyODataSample.svc/Manufacturers">/Manufacturers</a></li>        
           </ul>
+        </li>      
+        <li>Term Deposit Entity Sets
+          <ul>
+            <li><a href="TermDeposit.svc">/TermDeposit.svc</a></li>        
+          </ul>
         </li>
+        <li>Term Deposit Sample Entities
+          <ul>
+            <li><a href="TermDeposit.svc/TermDeposits?$format=json">/TermDeposits</a></li>
+            <li><a href="TermDeposit.svc/TermDeposits('32432')?$format=json">/TermDeposits('32432')</a></li>        
+            <li><a href="TermDeposit.svc/TermDeposits('32432')?$expand=FromAccount,ToAccount&$format=json">/TermDeposits('32432')?$expand=FromAccount,ToAccount</a></li>
+            <li><a href="TermDeposit.svc/TermDeposits('32432')/FromAccount?$format=json">/TermDeposits('32432')/FromAccount</a></li>
+            <li><a href="TermDeposit.svc/TermDeposits('32432')/$value">/TermDeposits('32432')/$value</a></li>
+            <li><a href="TermDeposit.svc/TermDeposits('32432')/InterestRate?$format=json">/TermDeposits('32432')/InterestRate</a></li>           
+            <li><a href="TermDeposit.svc/TermDeposits('32432')/InterestRate/Term?$format=json">/TermDeposits('32432')/InterestRate/Term</a></li>
+          </ul>        
         <li>Sample Entities
           <ul>
             <li><a href="MyODataSample.svc/Cars(1)">/Cars(1)</a></li>        
